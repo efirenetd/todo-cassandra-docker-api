@@ -1,0 +1,25 @@
+version: '2.4'
+
+services:
+  cassandra:
+    image: cassandra:latest
+    build:
+      context: docker/cassandra
+      dockerfile: Dockerfile
+    ports:
+      - "9042:9042"
+    container_name: cassandra
+    mem_limit: 1g
+    healthcheck:
+      test: [ "CMD", "cqlsh", "-e", "describe keyspaces" ]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    volumes:
+      - ./docker/cassandra:/docker-entrypoint-initdb.d
+      - ./docker/cassandra:/etc/cassandra
+    networks:
+      - todo-api
+networks:
+  todo-api:
+    driver: bridge
